@@ -34,7 +34,6 @@ class _LoginscreenState extends State<Loginscreen> {
     );
 
     if (res == 'success') {
-      //success signing in
       if (mounted) {
         customSnackBar(context, "Successfully logged in");
       }
@@ -53,64 +52,191 @@ class _LoginscreenState extends State<Loginscreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.9,
-            padding: const EdgeInsets.symmetric(horizontal: 25),
+            height: MediaQuery.of(context).size.height * 0.95,
+            padding: const EdgeInsets.symmetric(horizontal: 30),
             width: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Flexible(flex: 2, child: Container()),
-                Text("FrameClub",
-                    style: GoogleFonts.xanhMono(
-                        fontSize: 40, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 30),
-                CustomTextField(
-                  hintText: 'Enter your Email',
-                  textFieldController: emailController,
-                  textInputType: TextInputType.text,
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  hintText: 'Enter your Password',
-                  textFieldController: passwordController,
-                  textInputType: TextInputType.text,
-                  isObscure: true,
-                ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: login,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2),
-                        color: Colors.blue),
-                    child: _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : const Text("Log In",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                Flexible(flex: 1, child: Container()),
+                // Logo and App Name
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.blue.withOpacity(0.1),
+                  ),
+                  child: Icon(
+                    Icons.camera_alt_rounded,
+                    size: 48,
+                    color: Colors.blue.shade700,
                   ),
                 ),
-                Flexible(flex: 2, child: Container()),
+                const SizedBox(height: 16),
+                Text(
+                  "FrameClub",
+                  style: GoogleFonts.xanhMono(
+                    fontSize: 42,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                    color: Colors.blue.shade800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Share your moments",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 50),
+
+                // Login Form
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade900,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 20,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      CustomTextField(
+                        hintText: 'Email',
+                        textFieldController: emailController,
+                        textInputType: TextInputType.emailAddress,
+                        prefixIcon: const Icon(Icons.email_outlined),
+                      ),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        hintText: 'Password',
+                        textFieldController: passwordController,
+                        textInputType: TextInputType.text,
+                        isObscure: true,
+                        prefixIcon: const Icon(Icons.lock_outline),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {},
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.blue.shade700,
+                            minimumSize: Size.zero,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 8,
+                              left: 8,
+                            ),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.shade600,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                "Log In",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Flexible(flex: 1, child: Container()),
+
+                // OR Divider
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          "OR",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 20),
+
+                // Sign Up Option
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Dont have an account?'),
-                    const SizedBox(width: 10),
+                    Text(
+                      'Don\'t have an account?',
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                    const SizedBox(width: 6),
                     GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const SignUpScreen(),
-                        ));
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SignUpScreen(),
+                          ),
+                        );
                       },
-                      child: const Text('sign up',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(
+                        'Sign up',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade700,
+                        ),
+                      ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 30),
               ],
             ),
           ),

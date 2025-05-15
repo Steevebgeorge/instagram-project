@@ -4,4 +4,3 @@ const darkModeBackgroundColor = Colors.black;
 const lightModeBackgroundColor = Colors.white;
 const darkModeTextColor = Colors.white;
 const lightModeTextColor = Colors.black;
-final lightmodeBottomNavColor = Colors.purple[50];

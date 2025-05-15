@@ -1,0 +1,9 @@
+{
+    "discord.detailsDebugging": "Debugging ",
+    "discord.detailsEditing": "Editing ",
+    "discord.lowerDetailsEditing": "Workspace",
+    "discord.lowerDetailsDebugging": "Debugging",
+    "discord.removeDetails": true,
+    "discord.removeLowerDetails": true,
+    "discord.removeRemoteRepository": true
+}

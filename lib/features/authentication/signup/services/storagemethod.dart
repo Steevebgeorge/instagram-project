@@ -9,7 +9,8 @@ class ProfileImageStorageMethod {
   Future<String> uploadImageToStorage(
     Uint8List file,
   ) async {
-    Reference reference = _storage.ref().child(_auth.currentUser!.uid);
+    Reference reference =
+        _storage.ref().child('ProfileImages').child(_auth.currentUser!.uid);
     UploadTask uploadTask = reference.putData(file);
     TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
