@@ -31,15 +31,22 @@ class Signup {
       );
       String photoUrl =
           await ProfileImageStorageMethod().uploadImageToStorage(file);
+      DateTime createdAt = DateTime.now();
 
       UserModel user = UserModel(
-          email: email,
-          uid: credential.user!.uid,
-          photoUrl: photoUrl,
-          userName: userName,
-          bio: '',
-          followers: [],
-          following: []);
+        email: email,
+        uid: credential.user!.uid,
+        photoUrl: photoUrl,
+        userName: userName,
+        bio: '',
+        followers: [],
+        following: [],
+        about: '',
+        createdAt: createdAt,
+        lastActive: createdAt,
+        isOnline: true,
+        pushToken: '',
+      );
 
       await _firestore.collection("users").doc(credential.user!.uid).set(
             user.toJson(),

@@ -68,10 +68,9 @@ class _LoginscreenState extends State<Loginscreen> {
                     shape: BoxShape.circle,
                     color: Colors.blue.withOpacity(0.1),
                   ),
-                  child: Icon(
-                    Icons.camera_alt_rounded,
-                    size: 48,
-                    color: Colors.blue.shade700,
+                  child: Image.asset(
+                    'assets/heart.png',
+                    scale: 5,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -81,7 +80,7 @@ class _LoginscreenState extends State<Loginscreen> {
                     fontSize: 42,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,
-                    color: Colors.blue.shade800,
+                    color: Colors.red.shade700,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -130,7 +129,7 @@ class _LoginscreenState extends State<Loginscreen> {
                         child: TextButton(
                           onPressed: () {},
                           style: TextButton.styleFrom(
-                            foregroundColor: Colors.blue.shade700,
+                            foregroundColor: Colors.red.shade700,
                             minimumSize: Size.zero,
                             padding: const EdgeInsets.only(
                               top: 8,
@@ -152,7 +151,7 @@ class _LoginscreenState extends State<Loginscreen> {
                       ElevatedButton(
                         onPressed: login,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade600,
+                          backgroundColor: Colors.red.shade700,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -230,7 +229,7 @@ class _LoginscreenState extends State<Loginscreen> {
                         'Sign up',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
+                          color: Colors.red.shade700,
                         ),
                       ),
                     ),

@@ -104,13 +104,18 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     final UserModel? user = Provider.of<UserProvider>(context).getuser;
 
+    if (user == null) {
+      // User data is not yet loaded
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       padding: EdgeInsets.only(top: 10),
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
                 InkWell(
@@ -166,7 +171,7 @@ class _PostCardState extends State<PostCard> {
             onDoubleTap: () async {
               await LikeMethods().likePost(
                 widget.snap['postId'],
-                user!.uid,
+                user.uid,
                 widget.snap['likes'],
               );
               setState(() {
@@ -208,7 +213,7 @@ class _PostCardState extends State<PostCard> {
           Row(
             children: [
               LikeAnimation(
-                isAnimated: widget.snap['likes'].contains(user!.uid),
+                isAnimated: widget.snap['likes'].contains(user.uid),
                 smallLiked: true,
                 child: IconButton(
                   onPressed: () async {

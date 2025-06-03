@@ -1,23 +1,20 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/constants/utils.dart';
+import 'package:instagram/features/authentication/models/usermodel.dart';
+import 'package:instagram/features/edit%20profile/screens/profileeditscreen.dart';
 import 'package:instagram/features/profile/services/follow.dart';
 import 'package:instagram/features/profile/widgets/buttons.dart';
 
-// ElevatedButton(
-//               onPressed: () {
-//                 FirebaseAuth.instance.signOut();
-//               },
-//               child: Text("logout"))
-
 class ProfileScreen extends StatefulWidget {
   final String uid;
+  final UserModel? currentUserData;
+
   const ProfileScreen({
     super.key,
     required this.uid,
+    this.currentUserData,
   });
 
   @override
@@ -37,8 +34,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
-    getData();
     _tabcontroller = TabController(length: 2, vsync: this);
+    getData();
   }
 
   @override
@@ -52,26 +49,34 @@ class _ProfileScreenState extends State<ProfileScreen>
       setState(() {
         isLoading = true;
       });
-      var userSnap = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.uid)
-          .get();
+
+      final currentUid = FirebaseAuth.instance.currentUser!.uid;
+
+      // Use provider data if it's the current user's profile
+      if (widget.uid == currentUid && widget.currentUserData != null) {
+        userdata = widget.currentUserData!.toJson();
+      } else {
+        var userSnap = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.uid)
+            .get();
+        if (userSnap.exists) {
+          userdata = userSnap.data()!;
+        }
+      }
 
       var postSnap = await FirebaseFirestore.instance
           .collection('nposts')
           .where('uid', isEqualTo: widget.uid)
           .get();
 
-      if (userSnap.exists) {
-        userdata = userSnap.data()!;
-        postLength = postSnap.docs.length;
-        log(postLength.toString());
-        followersCount = userdata['followers']?.length ?? 0;
-        followingcount = userdata['following']?.length ?? 0;
-        isFollowing = userdata['followers']
-                ?.contains(FirebaseAuth.instance.currentUser!.uid) ??
-            false;
-      }
+      postLength = postSnap.docs.length;
+      followersCount = userdata['followers']?.length ?? 0;
+      followingcount = userdata['following']?.length ?? 0;
+      isFollowing = userdata['followers']
+              ?.contains(FirebaseAuth.instance.currentUser!.uid) ??
+          false;
+
       setState(() {});
     } catch (e) {
       if (mounted) {
@@ -89,18 +94,14 @@ class _ProfileScreenState extends State<ProfileScreen>
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(userdata['userName'] ?? 'loading...'),
-        actions: [
-          Icon(Icons.menu),
-        ],
+        actions: const [Icon(Icons.menu)],
       ),
       body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       Row(
@@ -125,21 +126,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                           Expanded(
                             flex: 1,
-                            child: Column(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Row(
-                                  spacing: 30,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    buildStatColumn(postLength, 'posts'),
-                                    buildStatColumn(
-                                        followersCount, 'followers'),
-                                    buildStatColumn(
-                                        followingcount, 'following'),
-                                  ],
-                                )
+                                buildStatColumn(postLength, 'posts'),
+                                buildStatColumn(followersCount, 'followers'),
+                                buildStatColumn(followingcount, 'following'),
                               ],
                             ),
                           )
@@ -147,16 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                       Container(
                         alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Text(
-                          userdata['userName'],
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(top: 1),
+                        padding: const EdgeInsets.only(top: 8),
                         child: userdata['bio'] == ""
                             ? const SizedBox.shrink()
                             : Text(
@@ -172,6 +155,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                   children: [
                     FirebaseAuth.instance.currentUser!.uid == widget.uid
                         ? ProfileButtons(
+                            function: () async {
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ProfileEditScreen()),
+                              );
+                              getData(); // Refresh after edit
+                            },
                             backgroundColor:
                                 Theme.of(context).scaffoldBackgroundColor,
                             borderColor: Colors.grey,
@@ -214,28 +205,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                       onPressed: () async {
                         await FirebaseAuth.instance.signOut();
                       },
-                      child: const Text("logout"),
+                      child: const Text("Logout"),
                     )
                   ],
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 30),
                 TabBar(
                   controller: _tabcontroller,
                   tabs: const [
-                    Tab(
-                      icon: Icon(
-                        Icons.grid_on_outlined,
-                        size: 30,
-                      ),
-                    ),
-                    Tab(
-                      icon: Icon(
-                        Icons.perm_contact_cal_rounded,
-                        size: 30,
-                      ),
-                    ),
+                    Tab(icon: Icon(Icons.grid_on_outlined, size: 30)),
+                    Tab(icon: Icon(Icons.perm_contact_cal_rounded, size: 30)),
                   ],
                 ),
                 SizedBox(
@@ -323,9 +302,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Column buildStatColumn(int num, String label) {
     return Column(
-      spacing: 8,
       mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           num.toString(),
@@ -343,6 +320,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void _showEnlargedImage(String imageUrl) {
+    if (imageUrl.isEmpty) return;
+
     showDialog(
       context: context,
       builder: (context) => Dialog(

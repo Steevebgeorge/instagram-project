@@ -90,10 +90,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.camera_alt,
-                        size: 48,
-                        color: Colors.blue.shade800,
+                      Image.asset(
+                        'assets/heart.png',
+                        scale: 5,
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -102,7 +101,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
-                          color: Colors.blue.shade800,
+                          color: Colors.red.shade700,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -156,7 +155,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: Colors.blue.shade800,
+                            color: Colors.red.shade700,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.white,
@@ -245,7 +244,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         decoration: InputDecoration(
           prefixIcon: Icon(
             icon,
-            color: Colors.blue.shade800,
+            color: Colors.red.shade700,
           ),
           hintText: hintText,
           hintStyle: TextStyle(
@@ -271,8 +270,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Colors.blue.shade700,
-              Colors.blue.shade900,
+              Colors.red.shade500,
+              Colors.red.shade900,
             ],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
@@ -324,7 +323,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Text(
             'Login',
             style: TextStyle(
-              color: Colors.blue.shade800,
+              color: Colors.red.shade700,
               fontWeight: FontWeight.bold,
               fontSize: 14,
             ),

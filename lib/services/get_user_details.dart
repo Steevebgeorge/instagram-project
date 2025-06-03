@@ -9,15 +9,19 @@ class GetUserDetails {
   final FirebaseFirestore _storage = FirebaseFirestore.instance;
 
   Future<UserModel> getUserDetails() async {
-    User currentUser = _auth.currentUser!;
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) {
+      throw Exception('No user is currently signed in');
+    }
+
     DocumentSnapshot snap =
         await _storage.collection('users').doc(currentUser.uid).get();
+
     if (!snap.exists) {
-      log('error in getting user details');
-      throw Exception(
-        "user does not exists",
-      );
+      log('Error in getting user details');
+      throw Exception("User does not exist");
     }
+
     return UserModel.fromJson(snap.data() as Map<String, dynamic>);
   }
 }

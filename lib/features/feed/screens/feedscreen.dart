@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram/features/add%20post/screens/addpost.dart';
+import 'package:instagram/features/chat%20home/screens/homescreen.dart';
 import 'package:instagram/features/feed/widgets/postcard.dart';
 
 class FeedScreen extends StatelessWidget {
@@ -30,7 +31,11 @@ class FeedScreen extends StatelessWidget {
               icon: Icon(Icons.add_circle_outline_outlined),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ChatHome(),
+                ));
+              },
               icon: Icon(Icons.message_outlined),
             ),
           ],

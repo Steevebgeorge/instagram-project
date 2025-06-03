@@ -6,7 +6,11 @@ class UserModel {
   final String bio;
   final List followers;
   final List following;
-
+  final String about;
+  final createdAt;
+  final lastActive;
+  final bool isOnline;
+  final String pushToken;
   const UserModel(
       {required this.email,
       required this.uid,
@@ -14,7 +18,12 @@ class UserModel {
       required this.userName,
       required this.bio,
       required this.followers,
-      required this.following});
+      required this.following,
+      required this.about,
+      required this.createdAt,
+      required this.lastActive,
+      required this.isOnline,
+      required this.pushToken});
 
   Map<String, dynamic> toJson() => {
         'uid': uid,
@@ -24,6 +33,11 @@ class UserModel {
         'bio': bio,
         'followers': followers,
         'following': following,
+        'about': about,
+        'createdAt': createdAt,
+        'lastActive': lastActive,
+        'isOnline': isOnline,
+        'pushToken': pushToken,
       };
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +49,11 @@ class UserModel {
       bio: json['bio'] ?? '',
       followers: json['followers'] ?? [],
       following: json['following'] ?? [],
+      about: json['about'] ?? [],
+      createdAt: json['createdAt'] ?? [],
+      lastActive: json['lastActive'] ?? [],
+      isOnline: json['isOnline'] ?? [],
+      pushToken: json['pushToken'] ?? [],
     );
   }
 }
