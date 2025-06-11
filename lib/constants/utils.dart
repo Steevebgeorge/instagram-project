@@ -17,3 +17,8 @@ customSnackBar(BuildContext context, String content) {
     SnackBar(content: Text(content)),
   );
 }
+
+getFormattedTime({required BuildContext context, required String time}) {
+  final date = DateTime.now( );
+  return TimeOfDay.fromDateTime(date).format(context);
+}

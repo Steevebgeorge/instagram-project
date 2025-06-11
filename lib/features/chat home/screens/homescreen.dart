@@ -162,8 +162,9 @@ class _ChatHomeState extends State<ChatHome> {
                   return ListView.builder(
                     physics: BouncingScrollPhysics(),
                     itemCount: displayList.length,
-                    itemBuilder: (context, index) =>
-                        ChatCard(user: displayList[index]),
+                    itemBuilder: (context, index) => ChatCard(
+                      user: displayList[index],
+                    ),
                   );
                 },
               ),

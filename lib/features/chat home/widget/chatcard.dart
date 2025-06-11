@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/features/authentication/models/usermodel.dart';
+import 'package:instagram/features/chat%20page/screens/chatpage.dart';
 
 class ChatCard extends StatelessWidget {
   final UserModel user;
@@ -22,7 +23,14 @@ class ChatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              user: user,
+              receiverId: user.uid,
+            ),
+          ),
+        ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
