@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:instagram/features/feed/screens/feedscreen.dart';
+import 'package:instagram/features/home/services/activites.dart';
 import 'package:instagram/features/notification/screens/notification.dart';
 import 'package:instagram/features/profile/screens/profile.dart';
 import 'package:instagram/features/search/screens/searchscreen.dart';
@@ -26,6 +28,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    AppActivities().updateOnlineStatus(true);
+    SystemChannels.lifecycle.setMessageHandler(
+      (message) {
+        log(message.toString());
+        if (FirebaseAuth.instance.currentUser != null) {
+          if (message.toString().contains('pause')) {
+            AppActivities().updateOnlineStatus(false);
+          }
+          if (message.toString().contains('resume')) {
+            AppActivities().updateOnlineStatus(true);
+          }
+        }
+        return Future.value(message);
+      },
+    );
     _initialize();
   }
 
@@ -105,20 +122,17 @@ class _HomeScreenState extends State<HomeScreen> {
               : const Center(child: CircularProgressIndicator()),
         ],
       ),
-      bottomNavigationBar: SizedBox(
-        height: 80,
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: navigationTap,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.notifications), label: "Notification"),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: navigationTap,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notifications), label: "Notification"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+        ],
       ),
     );
   }

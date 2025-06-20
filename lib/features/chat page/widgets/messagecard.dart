@@ -1,7 +1,11 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/features/authentication/models/usermodel.dart';
 import 'package:instagram/features/chat%20page/models/chatmodel.dart';
+import 'package:instagram/features/chat%20page/services/chat.dart';
 import 'package:instagram/providers/userprovider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +47,18 @@ class _MessageCardState extends State<MessageCard> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    if (widget.message.read.isEmpty) {
+      log("message updated");
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ChatFeatures().updateMessageSeen(widget.message.fromId);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final UserModel? user = Provider.of<UserProvider>(context).getuser;
     if (user == null) {
@@ -75,7 +91,9 @@ class _MessageCardState extends State<MessageCard> {
                 children: [
                   Container(
                     padding: EdgeInsets.all(
-                      scsize.width * 0.04,
+                      widget.message.type == MessageType.image
+                          ? scsize.width * 0.029
+                          : scsize.width * 0.04,
                     ),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.green),
@@ -85,10 +103,22 @@ class _MessageCardState extends State<MessageCard> {
                           topRight: Radius.circular(30),
                           bottomLeft: Radius.circular(30)),
                     ),
-                    child: Text(
-                      widget.message.message,
-                      style: TextStyle(fontSize: 15, color: Colors.black),
-                    ),
+                    child: widget.message.type == MessageType.text
+                        ? Text(
+                            widget.message.message,
+                            style: TextStyle(fontSize: 15, color: Colors.black),
+                          )
+                        : CachedNetworkImage(
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            imageUrl: widget.message.message,
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error_outline),
+                          ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -98,7 +128,10 @@ class _MessageCardState extends State<MessageCard> {
                           ? Text(formatTimestamp(widget.message.sent))
                           : SizedBox.shrink(),
                       onMyMessageTapp && widget.message.read.isNotEmpty
-                          ? Icon(Icons.done_all)
+                          ? Icon(
+                              Icons.done_all,
+                              color: Colors.blue,
+                            )
                           : SizedBox.shrink(),
                     ],
                   )
@@ -141,10 +174,22 @@ class _MessageCardState extends State<MessageCard> {
                           topRight: Radius.circular(30),
                           bottomRight: Radius.circular(30)),
                     ),
-                    child: Text(
-                      widget.message.message,
-                      style: TextStyle(fontSize: 15, color: Colors.black),
-                    ),
+                    child: widget.message.type == MessageType.text
+                        ? Text(
+                            widget.message.message,
+                            style: TextStyle(fontSize: 15, color: Colors.black),
+                          )
+                        : CachedNetworkImage(
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            imageUrl: widget.message.message,
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error_outline),
+                          ),
                   ),
                   SizedBox(
                     height: 2,

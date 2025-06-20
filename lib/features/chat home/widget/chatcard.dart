@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/features/authentication/models/usermodel.dart';
+import 'package:instagram/features/chat%20page/models/chatmodel.dart';
 import 'package:instagram/features/chat%20page/screens/chatpage.dart';
+import 'package:instagram/features/chat%20page/services/chat.dart';
+import 'package:instagram/features/home/services/activites.dart';
 
-class ChatCard extends StatelessWidget {
+class ChatCard extends StatefulWidget {
   final UserModel user;
 
   const ChatCard({
@@ -11,6 +14,13 @@ class ChatCard extends StatelessWidget {
     required this.user,
   });
 
+  @override
+  State<ChatCard> createState() => _ChatCardState();
+}
+
+class _ChatCardState extends State<ChatCard> {
+  MessageModel? _message;
+  ChatFeatures chatfeatures = ChatFeatures();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,110 +36,94 @@ class ChatCard extends StatelessWidget {
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ChatScreen(
-              user: user,
-              receiverId: user.uid,
+              user: widget.user,
+              receiverId: widget.user.uid,
             ),
           ),
         ),
         borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    width: 2,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(28),
-                  child: CachedNetworkImage(
-                    imageUrl: user.photoUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: Colors.grey[300],
-                      child: const Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.person),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
-              // User Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.userName,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyLarge?.color,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'hello',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.color
-                            ?.withOpacity(0.7),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-
-              // Timestamp & Unread Indicator
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+        child: StreamBuilder(
+          stream: chatfeatures.getLastMessage(widget.user, widget.user.uid),
+          builder: (context, snapshot) {
+            final data = snapshot.data?.docs;
+            final list =
+                data?.map((e) => MessageModel.fromJson(e.data())).toList() ??
+                    [];
+            if (list.isNotEmpty) _message = list[0];
+            return ListTile(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    '12:00 AM',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.color
-                          ?.withOpacity(0.6),
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: CachedNetworkImageProvider(widget.user.photoUrl),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Container(
-                    alignment: Alignment.topLeft,
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: Colors.lightGreenAccent,
-                      shape: BoxShape.circle,
-                    ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.user.userName,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        _message != null
+                            ? (_message!.type == MessageType.image
+                                ? 'image'
+                                : _message!.message)
+                            : widget.user.about,
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 13),
+                      )
+                    ],
+                  ),
+                  Spacer(),
+                  StreamBuilder(
+                    stream: AppActivities().getUserInfo(widget.user),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return SizedBox(
+                          height: 12,
+                          width: 12,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData ||
+                          snapshot.data!.docs.isEmpty) {
+                        return Text('User not found');
+                      } else {
+                        final userData = snapshot.data?.docs;
+                        final list = userData
+                                ?.map((e) => UserModel.fromJson(e.data()))
+                                .toList() ??
+                            [];
+                        return Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: list[0].isOnline
+                                    ? Colors.green
+                                    : Colors.red));
+                      }
+                    },
                   ),
                 ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
